@@ -1,0 +1,18 @@
+// fs.createReadStream(csvFilePath)
+//   .pipe(csv())
+//   .on('data', async (row) => {
+//     try {
+//       console.log("Attempting password reset for user: ", row.email);
+//       await setOktaUserPassword(row.email, "Lear@1234", false);
+//       console.log(`Password reset success for user: ${row.email}`);
+//     } catch (err) {
+//       console.error(`Failed to reset password for ${row.email}:`, err.message);
+//     }
+//   })
+//   .on('end', () => {
+//     console.log('CSV processing finished.');
+//   });
+
+
+const fs = require('fs');
+// const csv = require('csv-parser');
