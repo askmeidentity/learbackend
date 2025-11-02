@@ -1,0 +1,12 @@
+[
+  {
+    "envName": "Prod",
+    "oktaUrl": "https://someokta.com",
+    "apiKey": "somepaoi"
+  },
+  {
+    "envName": "dev",
+    "oktaUrl": "sds",
+    "apiKey": "sds"
+  }
+]
