@@ -8,8 +8,27 @@ const headers = {
   'Content-Type': 'application/json',
 };
 
+//Fetch user by usermame
+// Fetch Okta user ID by username (login)
+async function getUserIdByUsername(username) {
+  const url = `${OKTA_ORG_URL}/api/v1/users/${username}`;
+  try {
+    // Okta allows filtering users by login using query parameters
+    const response = await axios.get(url, {
+      headers
+    });
+    const user = response.data;
+    console.log(`Found user:`, user.id);
+    return user.id; // Return userId of the first matched user
+  } catch (error) {
+    throw new Error(`Failed to get userId for username ${username}: ${error.response?.data?.errorSummary || error.message}`);
+  }
+}
+
+
 // Fetch all enrolled factors for a user
 async function getUserEnrolledFactors(userId) {
+  // console.log("Received userId for factors:", userId);
   const url = `${OKTA_ORG_URL}/api/v1/users/${userId}/factors`;
   try {
     const response = await axios.get(url, { headers });
@@ -21,14 +40,20 @@ async function getUserEnrolledFactors(userId) {
 
 // Reset factors that match the given factor types list
 // factorsToReset is an array of factorType strings, e.g. ['push', 'sms', 'question']
-async function resetMatchedFactors(userId, factorsToReset) {
+async function resetMatchedFactors(username, factorsToReset) {
   try {
+    // console.log("Searching for user:", username);
+    const userId = await getUserIdByUsername(username);
+    // console.log("Got userId:", userId);
     const enrolledFactors = await getUserEnrolledFactors(userId);
     const results = [];
-
+    // console.log("Enrolled factors:", enrolledFactors);
     for (const factor of enrolledFactors) {
+  
       // factor.factorType examples: 'push', 'sms', 'question', 'token:software:totp'
-      if (factorsToReset.includes(factor.factorType)) {
+      console.log("Checking factor:", factorsToReset);
+      if (factorsToReset[factor.factorType]) {
+       
         const url = `${OKTA_ORG_URL}/api/v1/users/${userId}/factors/${factor.id}`;
         try {
           await axios.delete(url, { headers });
@@ -44,4 +69,4 @@ async function resetMatchedFactors(userId, factorsToReset) {
   }
 }
 
-module.exports = { getUserEnrolledFactors, resetMatchedFactors };
+module.exports = { getUserEnrolledFactors, resetMatchedFactors, getUserIdByUsername };
